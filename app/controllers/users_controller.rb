@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   def sign_up
-    User.create(user_params)
+    User.create!(user_params)
 
     head :created
   end

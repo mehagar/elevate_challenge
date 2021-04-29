@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  get 'test2/test'
   scope '/api' do
-    post 'users/sign_up'
+    post 'user', to: 'users#sign_up'
+    post 'sessions', to: 'sessions#sign_in'
   end
 end
