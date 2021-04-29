@@ -10,4 +10,13 @@ RSpec.describe 'UsersController', type: :request do
     expect(response).to have_http_status(:created)
     expect(User.find_by(email: 'test_email')).to_not be_nil
   end
+
+  it 'creates game events' do
+    game = Game.create(name: 'game1', url: 'http://game1', category: 'math')
+    json_params = { type: 'COMPLETED', occured_at: DateTime.now.to_i, game_id: game.id }.to_json
+
+    post '/api/user/game_events', params: json_params, headers: json_request_headers
+
+    expect(response).to have_http_status(:ok)
+  end
 end

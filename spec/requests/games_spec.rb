@@ -15,5 +15,4 @@ RSpec.describe "Games", type: :request do
       expect(json[:games][2][:id]).to eq(game3.id)
     end
   end
-
 end

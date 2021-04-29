@@ -17,6 +17,15 @@ RSpec.describe 'Sessions', type: :request do
 
     context 'invalid credentials' do
       it 'does not return token' do
+        attrs = { email: 'test_email', username: 'test_user', fullname: 'first last',
+                  password: 'testpassword' }
+        User.create(attrs)
+        attrs[:password] = 'wrongpassword'
+        json_params = attrs.to_json
+
+        post '/api/sessions', params: json_params, headers: json_request_headers
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
   end
