@@ -10,8 +10,6 @@ installations.
 1. Install ruby via `rvm install $(cat .ruby-version)`
 2. `gem install bundler`
 3. `bundle install`
-4. `bin/rails db:create`
-5. `bin/rails db:schema:load`
 
 ## Running tests
 
