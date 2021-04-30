@@ -1,6 +1,8 @@
 require 'securerandom'
 
 class User < ApplicationRecord
+  has_many :game_events
+
   before_create :set_auth_token
 
   validates_presence_of :email, :username, :fullname

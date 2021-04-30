@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   scope '/api' do
     scope '/user' do
       post '/', to: 'users#sign_up'
+      get '/', to: 'users#details'
       post 'game_events', to: 'users#create_game_event'
     end
 

@@ -5,6 +5,28 @@ class UsersController < ApplicationController
     head :created
   end
 
+  def details
+    user = current_user
+
+    user_stats = {}
+    Game::GAME_CATEGORIES.each do |category|
+      # TODO: is this n+1?
+      games_played_in_category = user.game_events.where { |game_event| game_event.game.category == category }
+      user_stats["total_#{category}_games_played".to_sym] = games_played_in_category
+    end
+
+    user_details = {
+      user: {
+        id: User.id,
+        username: user.username,
+        email: user.email,
+        full_name: user.fullname,
+        stats: user_stats }
+    }.to_json
+
+    render :json, user_details
+  end
+
   def create_game_event
     GameEvent.create!(game_type: game_event_params[:type],
                       occured_at: game_event_params[:occured_at],
@@ -12,10 +34,6 @@ class UsersController < ApplicationController
                       user_id: current_user.id)
 
     head :created
-
-    # want to record number of games played per user, along with each type of game. game event model references game_id and user_id, so
-    # can select COUNT(*) from users join game_events on user.id = game_events.id to get total number of games played
-    # select COUNT(*) from users join game_events on user.id = game_events.id join games on game_events.id = games.id group by games.category
   end
 
   def user_params
