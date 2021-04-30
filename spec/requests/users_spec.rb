@@ -64,11 +64,18 @@ RSpec.describe 'UsersController', type: :request do
     end
 
     it 'shows streak > 1 day' do
+      # create game events on consecutive days for single game
 
+      get '/api/user', headers: json_request_headers(@current_user.auth_token)
+
+      expect(json[:user][:stats][:current_streak_in_days]).to eq(5)
     end
 
     it 'shows 0 streak' do
+      pending
+      get '/api/user', headers: json_request_headers(@current_user.auth_token)
 
+      expect(json[:user][:stats][:current_streak_in_days]).to eq(0)
     end
   end
 end

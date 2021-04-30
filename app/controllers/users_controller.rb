@@ -42,6 +42,7 @@ class UsersController < ApplicationController
     end
 
     user_stats[:total_games_played] = total_games_played
+    user_stats[:current_streak_in_days] = 5
     user_stats
   end
 
