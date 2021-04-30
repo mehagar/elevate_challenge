@@ -60,7 +60,7 @@ class UsersController < ApplicationController
 
     # there can still be a streak even if the current day does not have a game event,
     # so handle that case here.
-    streak += 1 if user.game_events.where(occured_at: current_day).count.positive?
+    streak += 1 if user.game_events.where(occured_at: Date.today).count.positive?
     streak
   end
 

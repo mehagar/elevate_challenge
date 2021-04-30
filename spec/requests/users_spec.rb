@@ -63,25 +63,60 @@ RSpec.describe 'UsersController', type: :request do
       expect(json[:user][:stats][:total_reading_games_played]).to eq(num_reading_game_events)
     end
 
-    it 'shows streak > 1 day' do
-      # create game events on consecutive days for single game
-      # freeze_time do
-      #   GameEvent.create!(game_type: 'COMPLETED',
-      #                     occured_at: Date.today,
-      #                     game_id: @math_game.id,
-      #                     user_id: @current_user.id)
-      # end
+    context 'played today' do
+      it 'shows streak > 1 day when played on current day' do
+        # create game events on consecutive days for single game
+        current_day = Date.today
+        travel_to(current_day) do
+          GameEvent.create!(game_type: 'COMPLETED',
+                            occured_at: current_day,
+                            game_id: @math_game.id,
+                            user_id: @current_user.id)
 
-      get '/api/user', headers: json_request_headers(@current_user.auth_token)
+          GameEvent.create!(game_type: 'COMPLETED',
+                            occured_at: current_day.prev_day(1),
+                            game_id: @math_game.id,
+                            user_id: @current_user.id)
 
-      expect(json[:user][:stats][:current_streak_in_days]).to eq(5)
+          GameEvent.create!(game_type: 'COMPLETED',
+                            occured_at: current_day.prev_day(2),
+                            game_id: @math_game.id,
+                            user_id: @current_user.id)
+
+          get '/api/user', headers: json_request_headers(@current_user.auth_token)
+
+          expect(json[:user][:stats][:current_streak_in_days]).to eq(3)
+        end
+      end
     end
 
-    it 'shows 0 streak' do
-      pending
-      get '/api/user', headers: json_request_headers(@current_user.auth_token)
+    context 'did not play today' do
+      it 'shows 0 streak' do
+        travel_to(Date.today.next_day(2)) do
+          get '/api/user', headers: json_request_headers(@current_user.auth_token)
 
-      expect(json[:user][:stats][:current_streak_in_days]).to eq(0)
+          expect(json[:user][:stats][:current_streak_in_days]).to eq(0)
+        end
+      end
+
+      it 'shows streak if played yesterday but not today' do
+        current_day = Date.today
+        travel_to(current_day) do
+          GameEvent.create!(game_type: 'COMPLETED',
+                            occured_at: current_day.prev_day(1),
+                            game_id: @math_game.id,
+                            user_id: @current_user.id)
+
+          GameEvent.create!(game_type: 'COMPLETED',
+                            occured_at: current_day.prev_day(2),
+                            game_id: @math_game.id,
+                            user_id: @current_user.id)
+
+          get '/api/user', headers: json_request_headers(@current_user.auth_token)
+
+          expect(json[:user][:stats][:current_streak_in_days]).to eq(2)
+        end
+      end
     end
   end
 end
