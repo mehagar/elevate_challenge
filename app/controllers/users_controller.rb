@@ -8,22 +8,14 @@ class UsersController < ApplicationController
   def details
     user = current_user
 
-    user_stats = {}
-    total_games_played = 0
-    Game::GAME_CATEGORIES.each do |category|
-      games_played_in_category = user.game_events.includes(:game).count { |game_event| game_event.game.category == category }
-      total_games_played += games_played_in_category
-      user_stats["total_#{category}_games_played".to_sym] = games_played_in_category
-    end
-
-    user_stats[:total_games_played] = total_games_played
+    user_stats = get_user_stats(user)
 
     user_details = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        full_name: user.fullname,
-        stats: user_stats
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      full_name: user.fullname,
+      stats: user_stats
     }
 
     render json: { user: user_details }
@@ -36,6 +28,25 @@ class UsersController < ApplicationController
                       user_id: current_user.id)
 
     head :created
+  end
+
+  private
+
+  def get_user_stats(user)
+    user_stats = {}
+    total_games_played = 0
+    Game::GAME_CATEGORIES.each do |category|
+      games_played_in_category = user.game_events.includes(:game).count { |game_event| is_completed_game?(game_event, category) }
+      total_games_played += games_played_in_category
+      user_stats["total_#{category}_games_played".to_sym] = games_played_in_category
+    end
+
+    user_stats[:total_games_played] = total_games_played
+    user_stats
+  end
+
+  def is_completed_game?(game_event, category)
+    game_event.game_type == GameEvent::GAME_TYPE_COMPLETED && game_event.game.category == category
   end
 
   def user_params
