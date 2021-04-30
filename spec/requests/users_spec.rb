@@ -34,7 +34,31 @@ RSpec.describe 'UsersController', type: :request do
 
   describe 'get api/user' do
     it 'gets the current users details' do
-      
+      math_game = Game.create(name: 'math_game', url: 'http://math', category: 'math')
+      reading_game = Game.create(name: 'reading_game', url: 'http://reading_game', category: 'reading')
+
+      num_math_game_events = 4
+      num_math_game_events.times do
+        GameEvent.create!(game_type: 'COMPLETED',
+                         occured_at: Time.now.to_i,
+                         game_id: math_game.id,
+                         user_id: @current_user.id)
+      end
+
+      num_reading_game_events = 4
+      num_reading_game_events.times do
+        GameEvent.create!(game_type: 'COMPLETED',
+                          occured_at: Time.now.to_i,
+                          game_id: reading_game.id,
+                          user_id: @current_user.id)
+      end
+
+      get '/api/user', headers: json_request_headers(@current_user.auth_token)
+
+      expect(json[:user][:id]).to eq(@current_user.id)
+      expect(json[:user][:stats][:total_games_played]).to eq(num_math_game_events + num_reading_game_events)
+      expect(json[:user][:stats][:total_math_games_played]).to eq(num_math_game_events)
+      expect(json[:user][:stats][:total_reading_games_played]).to eq(num_reading_game_events)
     end
   end
 end

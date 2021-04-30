@@ -3,7 +3,7 @@ class SessionsController < ApplicationController
     user = User.find_by(email: user_params[:email])
 
     if (authenticated_user = user.authenticate(user_params[:password]))
-      render json: { 'token': authenticated_user.auth_token }.to_json
+      render json: { 'token': authenticated_user.auth_token }
     else
       head :unauthorized
     end

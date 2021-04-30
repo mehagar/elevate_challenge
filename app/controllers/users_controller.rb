@@ -9,22 +9,24 @@ class UsersController < ApplicationController
     user = current_user
 
     user_stats = {}
+    total_games_played = 0
     Game::GAME_CATEGORIES.each do |category|
-      # TODO: is this n+1?
-      games_played_in_category = user.game_events.where { |game_event| game_event.game.category == category }
+      games_played_in_category = user.game_events.includes(:game).count { |game_event| game_event.game.category == category }
+      total_games_played += games_played_in_category
       user_stats["total_#{category}_games_played".to_sym] = games_played_in_category
     end
 
+    user_stats[:total_games_played] = total_games_played
+
     user_details = {
-      user: {
-        id: User.id,
+        id: user.id,
         username: user.username,
         email: user.email,
         full_name: user.fullname,
-        stats: user_stats }
-    }.to_json
+        stats: user_stats
+    }
 
-    render :json, user_details
+    render json: { user: user_details }
   end
 
   def create_game_event
