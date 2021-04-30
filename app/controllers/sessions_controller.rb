@@ -1,4 +1,6 @@
 class SessionsController < ApplicationController
+  skip_before_action :authenticate, only: :sign_in
+
   def sign_in
     user = User.find_by(email: user_params[:email])
 
@@ -8,6 +10,8 @@ class SessionsController < ApplicationController
       head :unauthorized
     end
   end
+
+  private
 
   def user_params
     params.permit(:email, :password)
