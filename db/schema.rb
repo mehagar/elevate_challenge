@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_29_235847) do
+ActiveRecord::Schema.define(version: 2021_04_30_013027) do
 
   create_table "game_events", force: :cascade do |t|
     t.string "game_type"
-    t.datetime "occured_at"
+    t.date "occured_at"
     t.integer "game_id", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(version: 2021_04_29_235847) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "auth_token"
+    t.integer "streak"
   end
 
   add_foreign_key "game_events", "games"
