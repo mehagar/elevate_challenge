@@ -65,12 +65,12 @@ RSpec.describe 'UsersController', type: :request do
 
     it 'shows streak > 1 day' do
       # create game events on consecutive days for single game
-      freeze_time do
-        GameEvent.create!(game_type: 'COMPLETED',
-                          occured_at: Date.today,
-                          game_id: @math_game.id,
-                          user_id: @current_user.id)
-      end
+      # freeze_time do
+      #   GameEvent.create!(game_type: 'COMPLETED',
+      #                     occured_at: Date.today,
+      #                     game_id: @math_game.id,
+      #                     user_id: @current_user.id)
+      # end
 
       get '/api/user', headers: json_request_headers(@current_user.auth_token)
 

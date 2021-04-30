@@ -49,11 +49,10 @@ class UsersController < ApplicationController
   end
 
   def get_current_streak(user)
-    return 5
     streak = 0
     current_day = Date.yesterday
     loop do
-      break unless user.game_events.where(occured_at: current_day).count >= 0
+      break unless user.game_events.where(occured_at: current_day).count.positive?
 
       streak += 1
       current_day = current_day.prev_day
@@ -61,7 +60,7 @@ class UsersController < ApplicationController
 
     # there can still be a streak even if the current day does not have a game event,
     # so handle that case here.
-    streak += 1 if user.game_events.where(occured_at: current_day).count >= 0
+    streak += 1 if user.game_events.where(occured_at: current_day).count.positive?
     streak
   end
 
